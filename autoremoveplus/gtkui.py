@@ -38,6 +38,8 @@
 #    statement from all source files in the program, then also delete it here.
 #
 
+from __future__ import unicode_literals
+
 import gtk
 
 from deluge.log import LOG as log

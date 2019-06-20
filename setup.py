@@ -39,6 +39,8 @@
 #    statement from all source files in the program, then also delete it here.
 #
 
+from __future__ import unicode_literals
+
 from setuptools import setup
 
 __plugin_name__ = "AutoRemovePlus"
