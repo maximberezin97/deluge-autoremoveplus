@@ -71,26 +71,28 @@ DEFAULT_PREFS = {
 }
 
 
-def _get_ratio((i, t)):
+def _get_ratio(xxx_todo_changeme):
+    (i, t) = xxx_todo_changeme
     return t.get_ratio()
 
 
-def _date_added((i, t)):
+def _date_added(xxx_todo_changeme4):
+    (i, t) = xxx_todo_changeme4
     return (time.time() - t.time_added) / 86400.0
 
 
 # Add key label also to get_remove_rules():141
 filter_funcs = {
     'func_ratio': _get_ratio,
-    'func_added': lambda (i, t): (time.time() - t.time_added) / 86400.0,
-    'func_seed_time': lambda (i, t):
-        t.get_status(['seeding_time'])['seeding_time'] / 86400.0,
-    'func_seeders': lambda (i, t): t.get_status(['total_seeds'])['total_seeds']
+    'func_added': lambda i_t: (time.time() - i_t[1].time_added) / 86400.0,
+    'func_seed_time': lambda i_t1:
+        i_t1[1].get_status(['seeding_time'])['seeding_time'] / 86400.0,
+    'func_seeders': lambda i_t2: i_t2[1].get_status(['total_seeds'])['total_seeds']
 }
 
 sel_funcs = {
-    'and': lambda (a, b): a and b,
-    'or': lambda (a, b): a or b
+    'and': lambda a_b: a_b[0] and a_b[1],
+    'or': lambda a_b3: a_b3[0] or a_b3[1]
 }
 
 
@@ -134,7 +136,7 @@ class Core(CorePluginBase):
     @export
     def set_config(self, config):
         """Sets the config dictionary"""
-        for key in config.keys():
+        for key in list(config.keys()):
             self.config[key] = config[key]
         self.config.save()
         if self.looping_call.running:
@@ -196,7 +198,7 @@ class Core(CorePluginBase):
     def pause_torrent(self, torrent):
         try:
             torrent.pause()
-        except Exception, e:
+        except Exception as e:
             log.warn(
                 "AutoRemovePlus: Problems pausing torrent: %s", e
             )
@@ -204,7 +206,7 @@ class Core(CorePluginBase):
     def remove_torrent(self, torrentmanager, tid, remove_data):
         try:
             torrentmanager.remove(tid, remove_data=remove_data)
-        except Exception, e:
+        except Exception as e:
             log.warn(
                 "AutoRemovePlus: Problems removing torrent: %s", e
             )
@@ -220,7 +222,7 @@ class Core(CorePluginBase):
         total_rules = []
 
         for t in torrent.trackers:
-            for name, rules in tracker_rules.iteritems():
+            for name, rules in tracker_rules.items():
                 if(t['url'].find(name.lower()) != -1):
                     for rule in rules:
                         total_rules.append(rule)
