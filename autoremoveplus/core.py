@@ -73,13 +73,13 @@ DEFAULT_PREFS = {
 }
 
 
-def _get_ratio(xxx_todo_changeme):
-    (i, t) = xxx_todo_changeme
+def _get_ratio(i_t):
+    (i, t) = i_t
     return t.get_ratio()
 
 
-def _date_added(xxx_todo_changeme4):
-    (i, t) = xxx_todo_changeme4
+def _date_added(i_t):
+    (i, t) = i_t
     return (time.time() - t.time_added) / 86400.0
 
 
@@ -87,14 +87,14 @@ def _date_added(xxx_todo_changeme4):
 filter_funcs = {
     'func_ratio': _get_ratio,
     'func_added': lambda i_t: (time.time() - i_t[1].time_added) / 86400.0,
-    'func_seed_time': lambda i_t1:
-        i_t1[1].get_status(['seeding_time'])['seeding_time'] / 86400.0,
-    'func_seeders': lambda i_t2: i_t2[1].get_status(['total_seeds'])['total_seeds']
+    'func_seed_time': lambda i_t:
+        i_t[1].get_status(['seeding_time'])['seeding_time'] / 86400.0,
+    'func_seeders': lambda i_t: i_t[1].get_status(['total_seeds'])['total_seeds']
 }
 
 sel_funcs = {
     'and': lambda a_b: a_b[0] and a_b[1],
-    'or': lambda a_b3: a_b3[0] or a_b3[1]
+    'or': lambda a_b3: a_b[0] or a_b[1]
 }
 
 
