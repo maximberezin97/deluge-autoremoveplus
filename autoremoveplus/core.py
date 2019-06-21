@@ -74,19 +74,17 @@ DEFAULT_PREFS = {
 
 
 def _get_ratio(i_t):
-    (i, t) = i_t
-    return t.get_ratio()
+    return i_t[1].get_ratio()
 
 
 def _date_added(i_t):
-    (i, t) = i_t
-    return (time.time() - t.time_added) / 86400.0
+    return (time.time() - i_t[1].get_status(['time_added'])['time_added']) / 86400.0
 
 
 # Add key label also to get_remove_rules():141
 filter_funcs = {
     'func_ratio': _get_ratio,
-    'func_added': lambda i_t: (time.time() - i_t[1].time_added) / 86400.0,
+    'func_added': lambda i_t: (time.time() - i_t[1].get_status(['time_added'])['time_added']) / 86400.0,
     'func_seed_time': lambda i_t:
         i_t[1].get_status(['seeding_time'])['seeding_time'] / 86400.0,
     'func_seeders': lambda i_t: i_t[1].get_status(['total_seeds'])['total_seeds']
