@@ -40,18 +40,18 @@
 
 from __future__ import unicode_literals
 
-import gtk
+from gi.repository import Gtk
 
 from deluge.log import LOG as log
 from deluge.ui.client import client
-from deluge.plugins.pluginbase import GtkPluginBase
+from deluge.plugins.pluginbase import Gtk3PluginBase
 import deluge.component as component
 # import deluge.common
 
 from .common import get_resource
 
 
-class GtkUI(GtkPluginBase):
+class Gtk3UI(Gtk3PluginBase):
 
     def enable(self):
         log.debug("Enabling AutoRemovePlus...")
@@ -70,11 +70,11 @@ class GtkUI(GtkPluginBase):
         )
 
         # Create and fill remove rule list
-        self.rules = gtk.ListStore(str, str)
+        self.rules = Gtk.ListStore(str, str)
         client.autoremoveplus.get_remove_rules().addCallback(self.cb_get_rules)
 
         # Fill list with logical functions
-        self.sel_func_store = gtk.ListStore(str)
+        self.sel_func_store = Gtk.ListStore(str)
         self.sel_func_store.append(["and"])
         self.sel_func_store.append(["or"])
 
@@ -87,14 +87,14 @@ class GtkUI(GtkPluginBase):
         # Table to keep all rules
         self._blk_rules = self.builder.get_object("blk_rules")
         self._view = self._build_view_rules()
-        window_rules = gtk.ScrolledWindow()
-        window_rules.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        window_rules.set_shadow_type(gtk.SHADOW_IN)
+        window_rules = Gtk.ScrolledWindow()
+        window_rules.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        window_rules.set_shadow_type(Gtk.ShadowType.IN)
         window_rules.add(self._view)
         self._blk_rules.add(window_rules)
         self._blk_rules.show_all()
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
 
         cbo_remove = self.builder.get_object("cbo_remove")
         cbo_remove.pack_start(cell, True)
@@ -118,9 +118,9 @@ class GtkUI(GtkPluginBase):
 
         self._blk_trackers = self.builder.get_object("blk_trackers")
         self._view_trackers = self._build_view_trackers()
-        window = gtk.ScrolledWindow()
-        window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        window.set_shadow_type(gtk.SHADOW_IN)
+        window = Gtk.ScrolledWindow()
+        window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        window.set_shadow_type(Gtk.ShadowType.IN)
         window.add(self._view_trackers)
         self._blk_trackers.add(window)
         self._blk_trackers.show_all()
@@ -159,7 +159,7 @@ class GtkUI(GtkPluginBase):
         def on_menu_toggled(menu):
             client.autoremoveplus.set_ignore(component.get("TorrentView").get_selected_torrents(), menu.get_active())
 
-        self.menu = gtk.CheckMenuItem(_("AutoRemovePlus Exempt"))
+        self.menu = Gtk.CheckMenuItem(_("AutoRemovePlus Exempt"))
         self.menu.show()
 
         toggled = self.menu.connect('toggled', on_menu_toggled)
@@ -387,60 +387,60 @@ class GtkUI(GtkPluginBase):
             self.builder.get_object("cbo_sel_func").set_active(0)
 
     def _build_view_rules(self):
-        self.lstore_rules = gtk.ListStore(str, str, str, str, float)
-        view = gtk.TreeView(model=self.lstore_rules)
+        self.lstore_rules = Gtk.ListStore(str, str, str, str, float)
+        view = Gtk.TreeView(model=self.lstore_rules)
 
         # Create field to set the type of rule tracker/label
-        liststore_field_type = gtk.ListStore(str)
+        liststore_field_type = Gtk.ListStore(str)
         for item in ["Tracker", "Label"]:
             liststore_field_type.append([item])
-        crc = gtk.CellRendererCombo()
+        crc = Gtk.CellRendererCombo()
         crc.set_property("editable", True)
         crc.set_property("model", liststore_field_type)
         crc.set_property("text-column", 0)
         crc.set_property("has-entry", False)
         crc.connect("edited", self._on_combo_type_changed)
         # crc.set_active(0)
-        colc = gtk.TreeViewColumn(_("Type"), crc, text=0)
+        colc = Gtk.TreeViewColumn(_("Type"), crc, text=0)
         view.append_column(colc)
 
         # Create text field for label or tracker names
-        crt = gtk.CellRendererText()
+        crt = Gtk.CellRendererText()
         crt.set_property("editable", True)
         crt.connect("edited", self._on_name_changed)
-        colt = gtk.TreeViewColumn(_("Name"), crt, text=1)
+        colt = Gtk.TreeViewColumn(_("Name"), crt, text=1)
         view.append_column(colt)
 
         # Create field to set the type of selection and/or
         liststore_field_logic = self.sel_func_store
-        crl = gtk.CellRendererCombo()
+        crl = Gtk.CellRendererCombo()
         crl.set_property("editable", True)
         crl.set_property("model", liststore_field_logic)
         crl.set_property("text-column", 0)
         crl.set_property("has-entry", False)
         crl.connect("edited", self._on_combo_logic_changed)
         #crl.set_active(0) #TODO
-        coll = gtk.TreeViewColumn(_("Operator"), crl, text=2)
+        coll = Gtk.TreeViewColumn(_("Operator"), crl, text=2)
         view.append_column(coll)
 
         # Create field for remove rule selection
         liststore_field_rules = self.rules
-        crrr = gtk.CellRendererCombo()
+        crrr = Gtk.CellRendererCombo()
         crrr.set_property("editable", True)
         crrr.set_property("model", liststore_field_rules)
         crrr.set_property("text-column", 1)
         crrr.set_property("has-entry", False)
         crrr.connect("edited", self._on_combo_rules_changed)
-        colrr = gtk.TreeViewColumn(_("Remove Rule"), crrr, text=3)
+        colrr = Gtk.TreeViewColumn(_("Remove Rule"), crrr, text=3)
         view.append_column(colrr)
 
         # Spin button for minimum value
-        crm = gtk.CellRendererSpin()
+        crm = Gtk.CellRendererSpin()
         crm.set_property("editable", True)
         crm.set_property("digits", 3)
-        crm.set_property("adjustment", gtk.Adjustment(0, 0, 10000.0, 0.5, 10,0))
+        crm.set_property("adjustment", Gtk.Adjustment(0, 0, 10000.0, 0.5, 10,0))
         crm.connect("edited", self._on_spin_min_changed)
-        colm = gtk.TreeViewColumn(_("Minimum"), crm, text=4)
+        colm = Gtk.TreeViewColumn(_("Minimum"), crm, text=4)
         view.append_column(colm)
 
         return view
@@ -461,28 +461,28 @@ class GtkUI(GtkPluginBase):
         self.lstore_rules[path][4] = float(value)
 
     def _build_view_trackers(self):
-        self.lstore = gtk.ListStore(str, str)
-        view = gtk.TreeView(model=self.lstore)
+        self.lstore = Gtk.ListStore(str, str)
+        view = Gtk.TreeView(model=self.lstore)
 
         # Create field to set the type of exemption
-        liststore_field = gtk.ListStore(str)
+        liststore_field = Gtk.ListStore(str)
         for item in ["Tracker", "Label"]:
             liststore_field.append([item])
-        crc = gtk.CellRendererCombo()
+        crc = Gtk.CellRendererCombo()
         crc.set_property("editable", True)
         crc.set_property("model", liststore_field)
         crc.set_property("text-column", 0)
         crc.set_property("has-entry", False)
         crc.connect("edited", self._on_combo_changed)
         # crc.set_active(0)
-        colc = gtk.TreeViewColumn(_("Type"), crc, text=0)
+        colc = Gtk.TreeViewColumn(_("Type"), crc, text=0)
         view.append_column(colc)
 
         # Create text field for label or tracker names
-        crt = gtk.CellRendererText()
+        crt = Gtk.CellRendererText()
         crt.set_property("editable", True)
         crt.connect("edited", self._text_edited)
-        colt = gtk.TreeViewColumn(_("Name"), crt, text=1)
+        colt = Gtk.TreeViewColumn(_("Name"), crt, text=1)
         view.append_column(colt)
 
         return view
