@@ -92,7 +92,7 @@ filter_funcs = {
 
 sel_funcs = {
     'and': lambda a_b: a_b[0] and a_b[1],
-    'or': lambda a_b3: a_b[0] or a_b[1]
+    'or': lambda a_b: a_b[0] or a_b[1]
 }
 
 
